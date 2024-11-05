@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #003366; /* Your primary color */
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Products</h1>
+    <ul id="product-list"></ul>
+
+    <script>
+        // Array of random product names
+        const products = [
+            "Wireless Headphones",
+            "Smartphone",
+            "4K Ultra HD TV",
+            "Bluetooth Speaker",
+            "Gaming Mouse",
+            "Laptop Stand",
+            "Smartwatch",
+            "Fitness Tracker",
+            "Portable Charger",
+            "Mechanical Keyboard",
+            "Wireless Router",
+            "Action Camera",
+            "Virtual Reality Headset",
+            "Gaming Chair",
+            "Home Security Camera",
+            "Electric Toothbrush",
+            "Instant Pot",
+            "Coffee Maker",
+            "Air Fryer",
+            "Robot Vacuum Cleaner",
+            "Smart Light Bulbs",
+            "Streaming Device",
+            "E-Reader",
+            "Digital Photo Frame",
+            "Cordless Drill",
+            "Electric Kettle",
+            "Food Processor",
+            "Pressure Cooker",
+            "Electric Skillet",
+            "Blender",
+            "Water Filter Pitcher",
+            "Portable Bluetooth Projector",
+            "Sunglasses",
+            "Leather Backpack",
+            "Travel Mug",
+            "Camping Stove",
+            "Portable Speaker",
+            "Yoga Mat",
+            "Hiking Boots",
+            "Fishing Rod",
+            "Bicycle",
+            "Inflatable Paddle Board"
+        ];
+
+        // Select the unordered list element
+        const productList = document.getElementById('product-list');
+
+        // Loop through the products array and create list items
+        products.forEach(product => {
+            const listItem = document.createElement('li');
+            listItem.textContent = product;
+            productList.appendChild(listItem);
+        });
+    </script>
+</body>
+</html>
