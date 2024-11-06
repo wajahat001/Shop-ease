@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # User Service (Python Flask App)
+  user-service:
+    build:
+      context: ./User-Service
+    ports:
+      - "5000:5000"  # Expose port 5000 for the User Service
+    networks:
+      - shop-ease-network
+    volumes:
+      - ./User-Service:/app  # Mount User-Service folder
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+    command: python app.py  # Explicitly run the Flask app
+
+  # Product Service (Serving HTML)
+  product-service:
+    build:
+      context: ./Product-Service
+    ports:
+      - "5001:80"  # Expose port 80 (default for Nginx serving HTML)
+    networks:
+      - shop-ease-network
+    volumes:
+      - ./Product-Service:/usr/share/nginx/html  # Mount Product-Service folder
+    depends_on:
+      - user-service  # Ensure user-service is started first
+
+  # Order Service (Serving HTML)
+  order-service:
+    build:
+      context: ./Order-Service
+    ports:
+      - "5002:80"  # Expose port 80 (default for Nginx serving HTML)
+    networks:
+      - shop-ease-network
+    volumes:
+      - ./Order-Service:/usr/share/nginx/html  # Mount Order-Service folder
+    depends_on:
+      - user-service  # Ensure user-service is started first
+
+networks:
+  shop-ease-network:
+    driver: bridge

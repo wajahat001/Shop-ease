@@ -1,11 +1,7 @@
-# Use the official Nginx base image
-FROM nginx:alpine
+FROM nginx:latest
 
-# Copy your HTML file to the default directory served by Nginx
-COPY order-services.html /usr/share/nginx/html/order-services.html
+# Copy the HTML file to Nginx's default HTML directory
+COPY *.html /usr/share/nginx/html/
 
-# Expose port 80 for the web server
+# Expose port 80 to access the application
 EXPOSE 80
-
-# Start the Nginx server
-CMD ["nginx", "-g", "daemon off;"]
