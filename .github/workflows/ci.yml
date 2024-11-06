@@ -1,0 +1,85 @@
+name: CI/CD Pipeline
+
+# Trigger the workflow on push to the feature, develop, and main branches
+on:
+  push:
+    branches:
+      - 'feature/*'        # Trigger for any feature branch
+      - 'develop'          # Trigger when code is pushed to develop
+      - 'main'             # Trigger when code is pushed to main branch
+
+# Define jobs for the workflow
+jobs:
+  # Run tests on the code
+  test:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Python for running tests
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'  # Use Python version 3.10
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r User-Service/requirements.txt  # Install User-Service dependencies
+
+      # Run tests (you can define your tests in your app.py or in a separate test file)
+      - name: Run tests
+        run: |
+          # Add commands to run your tests, such as using pytest or unittest
+          python -m unittest discover User-Service/tests  # Assuming you have a test folder in User-Service
+
+  # Build and push Docker images
+  docker:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    needs: test  # Ensure that the test job has passed before running this job
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Log in to DockerHub (use GitHub Secrets for credentials)
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build Docker images for each service
+      - name: Build Docker image for User-Service
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest User-Service
+          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+
+      - name: Build Docker image for Product-Service
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/product-service:latest Product-Service
+          docker push ${{ secrets.DOCKER_USERNAME }}/product-service:latest
+
+      - name: Build Docker image for Order-Service
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/order-service:latest Order-Service
+          docker push ${{ secrets.DOCKER_USERNAME }}/order-service:latest
+
+      # Optionally, you can also tag the Docker images with specific commit hash or version
+      - name: Tag and push Docker images with commit hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          docker tag ${{ secrets.DOCKER_USERNAME }}/user-service:latest ${{ secrets.DOCKER_USERNAME }}/user-service:$COMMIT_HASH
+          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:$COMMIT_HASH
+
+          docker tag ${{ secrets.DOCKER_USERNAME }}/product-service:latest ${{ secrets.DOCKER_USERNAME }}/product-service:$COMMIT_HASH
+          docker push ${{ secrets.DOCKER_USERNAME }}/product-service:$COMMIT_HASH
+
+          docker tag ${{ secrets.DOCKER_USERNAME }}/order-service:latest ${{ secrets.DOCKER_USERNAME }}/order-service:$COMMIT_HASH
+          docker push ${{ secrets.DOCKER_USERNAME }}/order-service:$COMMIT_HASH
